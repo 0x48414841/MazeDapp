@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { fetchMaze } from '../actions';
+import Cell from './Cell';
 import './Maze.css';
 
-const Maze = ({ maze, fetchMaze }) => {
+const Maze = ({ maze, fetchMaze}) => {
     useEffect(() => {
         fetchMaze();
     }, [])
@@ -15,7 +16,8 @@ const Maze = ({ maze, fetchMaze }) => {
                     {
                         row.map(cell => {
                             return (
-                                <div class="cell left top right bottom"></div>
+                                //<div class="cell left top right bottom"></div>
+                                <React.Fragment> <Cell data={cell} /> </React.Fragment>
                             );
                         })
                     }
@@ -34,5 +36,5 @@ const mapStateToProps = (state) => {
 }
 
 export default connect(mapStateToProps, {
-    fetchMaze //fetchMaze action creator
+    fetchMaze, //fetchMaze action creator
 })(Maze);
