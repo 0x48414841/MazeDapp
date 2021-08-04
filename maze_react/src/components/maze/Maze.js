@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { fetchMaze } from '../actions';
+import { fetchMaze } from '../../actions';
 import Cell from './Cell';
 import './Maze.css';
 
-const Maze = ({ maze, fetchMaze}) => {
+const Maze = ({ maze, fetchMaze }) => {
     useEffect(() => {
         fetchMaze();
     }, [])
@@ -12,7 +12,7 @@ const Maze = ({ maze, fetchMaze}) => {
     const renderMaze = () => {
         return maze.map(row => {
             return (
-                <div className="row"> 
+                <div className="row">
                     {
                         row.map(cell => {
                             return (
@@ -27,7 +27,7 @@ const Maze = ({ maze, fetchMaze}) => {
     };
 
     return (
-        <div>{renderMaze()}</div>
+        <div className="grid"> {renderMaze()}</div>
     );
 };
 

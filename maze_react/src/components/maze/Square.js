@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { updatePos } from '../actions';
+import { updatePos } from '../../actions';
 import { connect } from 'react-redux';
 import './Square.css';
 

@@ -1,15 +1,14 @@
-export default (state = { X: 0, Y: 0, LastRow: 0, LastCol: 0 }, action) => {
+export default (state = { X: 0, Y: 0}, action) => {
+    //Error checking was done in updatePos action creator
     switch (action.type) {
         case 'INC_X':
-            return { ...state, X: min(state.X + 1, state.LastRow), Y: state.Y };
+            return { ...state, X: state.X + 1};
         case 'DEC_X':
-            return { ...state, X: max(state.X - 1, 0), Y: state.Y };
+            return { ...state, X: state.X - 1};
         case 'INC_Y':
-            return { ...state, X: state.X, Y: min(state.Y + 1, state.LastCol) }
+            return { ...state, Y: state.Y + 1 }
         case 'DEC_Y':
-            return {...state,  X: state.X, Y: max(state.Y - 1, 0) };
-        case 'UPDATE_MAX_ROW_AND_COL': //this allows for dfferent sized mazes
-            return { ...state, LastRow: action.payload.LastRow, LastCol: action.payload.LastCol };
+            return {...state, Y: state.Y - 1 };
         default:
             return state;
     }

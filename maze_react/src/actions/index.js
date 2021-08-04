@@ -4,8 +4,6 @@ import maze from "../apis/maze";
 export const fetchMaze = () => async dispatch => {
     const response = await maze.get('/maze');
     dispatch({ type: 'FETCH_MAZE', payload: response })
-    console.log(response)
-    dispatch(updateMaxRowAndCol(response.data.Maze.length, response.data.Maze[0].length ));
 };
 
 export const updatePos = (currentCell, event) => {
@@ -19,8 +17,4 @@ export const updatePos = (currentCell, event) => {
         return { type: 'INC_Y' };
     }
     return {type: 'Nop'}
-};
-
-export const updateMaxRowAndCol = (LastRow, LastCol) => {
-   return {type: 'UPDATE_MAX_ROW_AND_COL', payload: {LastRow, LastCol}};
 };

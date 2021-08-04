@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import Maze from './Maze';
+import React from 'react';
+import { BrowserRouter, Route } from 'react-router-dom';
+import Maze from './maze/Maze';
 
 const App = () => {
     return (
-       <div className="ui container"><Maze /></div>
+        <div ><Maze /></div>
     );
 };
 
