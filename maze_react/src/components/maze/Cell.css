@@ -1,0 +1,51 @@
+.cell  {
+    width: 2vw;
+    height: 2.5vh;
+    float: left;
+    margin-right: -1px;
+    margin-bottom: -1px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+.top {
+    border-top: 1px solid #000000;
+}
+
+.right {
+    border-right: 1px solid #000000;
+}
+
+.bottom {
+    border-bottom: 1px solid #000000;
+}
+
+.left {
+  border-left: 1px solid #000000;
+}
+
+
+.nobotttom {
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    border-bottom-color: transparent;
+}
+
+.noright {
+    border-right-width: 1px;
+    border-right-style: solid;
+    border-right-color: transparent;
+}
+
+.noleft {
+    border-left-width: 1px;
+    border-left-style: solid;
+    border-left-color: transparent;
+}
+
+.notop {
+    border-top-width: 1px;
+    border-top-style: solid;
+    border-top-color: transparent;
+}
