@@ -27,7 +27,40 @@ const Maze = ({ maze, fetchMaze }) => {
     };
 
     return (
-        <div className="grid"> {renderMaze()}</div>
+        <div className="ui grid">
+            <div className="three wide column">
+                <div className="ui container center aligned">
+                    <h1> MAKE SEPARATE COMP Player 1 </h1>
+                </div>
+            </div>
+            <div className="ten wide column">
+                <div className="ui container center aligned">
+                    <div> {renderMaze()}</div>
+                    <h2>MAKE SEPARATE COMP  Wager</h2>
+                    <div>
+                        <button class="ui labeled icon button">
+                            <i class="arrow down icon"></i>
+                            - 1
+                        </button>
+                        <div class="ui input">
+                            <input type="text" placeholder="Search..." />
+                        </div>
+                        <button class="ui labeled icon button">
+                            <i class="arrow up icon"></i>
+                            + 1
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+            <div className="three wide column">
+                <div className="ui container center aligned">
+                    <h1> MAKE SEPARATE COMP  Player 2 </h1>
+                </div>
+            </div>
+
+        </div>
+
     );
 };
 
