@@ -11,7 +11,8 @@ func main() {
 	//TODO add quey strings for customizable mazes
 	mazeHandler := func(w http.ResponseWriter, req *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		maze := maze.MakeBinaryTree(10, 10)
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		maze := maze.MakeBinaryTree(30, 30)
 		maze.On()
 		mazeJSON := maze.Grid.GridToJSON()
 		w.Write(mazeJSON)
