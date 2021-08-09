@@ -2,19 +2,22 @@ package main
 
 import (
 	"backend/game"
-	"fmt"
+	"encoding/json"
 	"net/http"
 
 	"github.com/gorilla/mux"
 )
 
-var ActiveLobbies map[string]bool
+type NewGame struct {
+	Id, Addr string
+}
 
 func CreateGameHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
-	lobbyId, gameAddr := game.CreateLobby()
-	fmt.Fprintf(w, lobbyId)
-	_ = gameAddr
+	lobbyId, gameAddr := game.CreateGame()
+	if data, err := json.Marshal(NewGame{Id: lobbyId, Addr: gameAddr}); err == nil {
+		w.Write(data)
+	}
 }
 
 func main() {
