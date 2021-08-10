@@ -1,7 +1,12 @@
 export default (state = { X: 0, Y: 0}, action) => {
     //Error checking was done in updatePos action creator
     switch (action.type) {
-        case 'INC_X':
+        case 'UPDATE_POS':
+            console.log(action.payload)
+            return {X: action.payload.X, Y: action.payload.Y};
+        default:
+            return state;
+        /*case 'INC_X':
             return { ...state, X: state.X + 1};
         case 'DEC_X':
             return { ...state, X: state.X - 1};
@@ -10,7 +15,7 @@ export default (state = { X: 0, Y: 0}, action) => {
         case 'DEC_Y':
             return {...state, Y: state.Y - 1 };
         default:
-            return state;
+            return state; */
     }
 };
 

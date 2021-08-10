@@ -15,15 +15,17 @@ const (
 )
 
 type Msg struct {
-	Action int
+	Action string
 	Pos    Position
+	Maze   [][]MazeData
 }
 
 type Position struct {
 	X, Y int
 }
 
-var upgrader = websocket.Upgrader{} // use default options
+//var upgrader = websocket.Upgrader{} // use default options
+var upgrader = websocket.Upgrader{CheckOrigin: func(r *http.Request) bool { return true }} //Prevents CORS error during local testing
 
 //defining a handler on a struct to access thread-specific data
 func (G *Game) handleGameClient(w http.ResponseWriter, r *http.Request) {
@@ -33,6 +35,9 @@ func (G *Game) handleGameClient(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer c.Close()
+
+	//send maze to player
+	G.sendMaze(c)
 
 	G.initPlayer(c) //create and broadcast new player to all users
 
@@ -80,6 +85,13 @@ func (G *Game) broadcastMsg() {
 	G.mutex.Lock()
 	defer G.mutex.Unlock()
 	for conn, pos := range G.PlayersPosition {
-		conn.WriteJSON(Msg{Pos: pos})
+		conn.WriteJSON(Msg{Action: "RECV_POS", Pos: pos})
+	}
+}
+
+func (G *Game) sendMaze(c *websocket.Conn) {
+	m := Msg{Action: "RECV_MAZE", Maze: G.Maze}
+	if err := c.WriteJSON(m); err != nil {
+		log.Println(err)
 	}
 }

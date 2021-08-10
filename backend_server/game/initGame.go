@@ -53,7 +53,9 @@ func createGame(addr, lobbyId string) {
 		PlayersPosition: make(map[*websocket.Conn]Position),
 		mutex:           &sync.Mutex{},
 	}
-
+	if len(newGame.Maze) == 0 {
+		return
+	}
 	r := mux.NewRouter()
 
 	//path looks something like /game?id=LOBBYID
@@ -71,7 +73,8 @@ func createGame(addr, lobbyId string) {
 func getMaze() [][]MazeData {
 	resp, err := http.Get(MAZE_ADDR)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return [][]MazeData{}
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)

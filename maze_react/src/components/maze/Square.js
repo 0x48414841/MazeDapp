@@ -1,14 +1,16 @@
 import React, { useEffect } from 'react';
-import { updatePos } from '../../actions';
+import { updatePosFromClient } from '../../actions';
 import { connect } from 'react-redux';
 import './Square.css';
 
-const Square = ({currentCell, updatePos}) => {
+const Square = ({currentCell, updatePosFromClient}) => {
 
     useEffect(() => {
         const onKeyPress = (event) => {
+            console.log('keypress')
+
             if (event.key === 'w' || event.key === 'a' || event.key === 's' || event.key === 'd') {
-                updatePos(currentCell, event);
+                updatePosFromClient(currentCell, event);
             }
         };
 
@@ -28,5 +30,5 @@ const mapStateToProps = (state) => {
 }
 
 export default connect(mapStateToProps, {
-    updatePos: updatePos //updatePos action creator
+    updatePosFromClient //updatePos action creator
 })(Square);
