@@ -1,9 +1,8 @@
-export default (state = { X: 0, Y: 0}, action) => {
+export default (state = [{ X: 0, Y: 0}], action) => {
     //Error checking was done in updatePos action creator
     switch (action.type) {
         case 'UPDATE_POS':
-            console.log(action.payload)
-            return {X: action.payload.X, Y: action.payload.Y};
+            return action.payload;
         default:
             return state;
         /*case 'INC_X':

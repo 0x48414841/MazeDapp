@@ -1,6 +1,7 @@
 package game
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
 
@@ -16,19 +17,38 @@ const (
 
 type Msg struct {
 	Action string
-	Pos    Position
+	AllPos []Position
 	Maze   [][]MazeData
 }
 
-type Position struct {
+type Position struct { //add more data here
 	X, Y int
 }
 
 //var upgrader = websocket.Upgrader{} // use default options
 var upgrader = websocket.Upgrader{CheckOrigin: func(r *http.Request) bool { return true }} //Prevents CORS error during local testing
 
+func (G *Game) isJoinable() bool {
+	return G.HasGameStarted == false && len(G.PlayersPosition) < 2
+}
+
+func (G *Game) handleIsJoinable(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.WriteHeader(http.StatusOK)
+	if data, err := json.Marshal(IsJoinable{Answer: G.isJoinable(), Id: G.Id, Port: G.Port}); err == nil {
+		w.Write(data)
+	} else {
+		log.Fatal(err)
+	}
+}
+
 //defining a handler on a struct to access thread-specific data
 func (G *Game) handleGameClient(w http.ResponseWriter, r *http.Request) {
+	//check if lobby is joinable first. This should've already been done, so this is a redundant/sanity check
+	if G.isJoinable() == false {
+		return
+	}
+
 	c, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Print("upgrade:", err)
@@ -38,7 +58,6 @@ func (G *Game) handleGameClient(w http.ResponseWriter, r *http.Request) {
 
 	//send maze to player
 	G.sendMaze(c)
-
 	G.initPlayer(c) //create and broadcast new player to all users
 
 	for {
@@ -84,8 +103,14 @@ func (G *Game) disconnectPlayer(c *websocket.Conn) {
 func (G *Game) broadcastMsg() {
 	G.mutex.Lock()
 	defer G.mutex.Unlock()
-	for conn, pos := range G.PlayersPosition {
-		conn.WriteJSON(Msg{Action: "RECV_POS", Pos: pos})
+
+	data := Msg{Action: "RECV_POS", AllPos: make([]Position, 0, len(G.PlayersPosition))} //capacity is the len of the map to prevent mem allocations within this crit section
+	for _, pos := range G.PlayersPosition {
+		data.AllPos = append(data.AllPos, pos)
+	}
+
+	for conn := range G.PlayersPosition {
+		conn.WriteJSON(data)
 	}
 }
 

@@ -7,7 +7,6 @@ const Square = ({currentCell, updatePosFromClient}) => {
 
     useEffect(() => {
         const onKeyPress = (event) => {
-            console.log('keypress')
 
             if (event.key === 'w' || event.key === 'a' || event.key === 's' || event.key === 'd') {
                 updatePosFromClient(currentCell, event);
@@ -26,7 +25,7 @@ const Square = ({currentCell, updatePosFromClient}) => {
 };
 
 const mapStateToProps = (state) => {
-    return { p1Loc: state.player1Location };
+    return { p1Loc: state.playersLoc};
 }
 
 export default connect(mapStateToProps, {

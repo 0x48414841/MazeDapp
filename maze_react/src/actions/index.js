@@ -19,7 +19,6 @@ export const wsDisconnected = host => ({ type: 'WS_DISCONNECTED', payload: host 
 
 
 export const updatePosFromClient = (currentCell, event) => {
-    console.log('in client handler')
     if (event.key === 'w' && currentCell.IsNLinked === true) {
         return { type: 'DEC_X' };
     } else if (event.key === 'a'  && currentCell.IsWLinked === true) {
@@ -32,6 +31,6 @@ export const updatePosFromClient = (currentCell, event) => {
     return {type: 'Nop'}
 };
 
-export const updatePosFromServer = (pos) => {
-    return {type: 'UPDATE_POS', payload: pos};
+export const updatePosFromServer = (allPos) => {
+    return {type: 'UPDATE_POS', payload: allPos};
 };

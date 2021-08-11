@@ -14,7 +14,6 @@ const socketMiddleware = () => {
 
     const onMessage = store => (event) => {
         const payload = JSON.parse(event.data);
-        console.log('receiving server message');
 
         //Receiving messages
         switch (payload.Action) {
@@ -22,8 +21,7 @@ const socketMiddleware = () => {
                 store.dispatch(setMaze(payload.Maze));
                 break;
             case 'RECV_POS':
-                console.log('here', payload.Pos)
-                store.dispatch(updatePosFromServer(payload.Pos));
+                store.dispatch(updatePosFromServer(payload.AllPos));
                 break;
             default:
                 break;
@@ -73,7 +71,6 @@ const socketMiddleware = () => {
                 socket.send(JSON.stringify({ command: 'NEW_MESSAGE', message: action.msg }));
                 break;
             default:
-                console.log('the next action:', action);
                 return next(action);
         }
     };

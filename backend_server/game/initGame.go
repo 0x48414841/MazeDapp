@@ -16,9 +16,11 @@ import (
 const MAZE_ADDR = "http://localhost:8080/maze"
 
 type Game struct {
+	Id, Port        string
 	Maze            [][]MazeData
 	PlayersPosition map[*websocket.Conn]Position
 	StartedAt       time.Time
+	HasGameStarted  bool
 	mutex           *sync.Mutex
 }
 
@@ -48,9 +50,12 @@ func CreateGame() (string, string) {
 //Inits the Game struct and starts server for clients
 func createGame(addr, lobbyId string) {
 	newGame := Game{
+		Id:              lobbyId,
+		Port:            addr,
 		StartedAt:       time.Now(),
 		Maze:            getMaze(),
 		PlayersPosition: make(map[*websocket.Conn]Position),
+		HasGameStarted:  false,
 		mutex:           &sync.Mutex{},
 	}
 	if len(newGame.Maze) == 0 {
@@ -61,12 +66,14 @@ func createGame(addr, lobbyId string) {
 	//path looks something like /game?id=LOBBYID
 	r.Path("/game").Queries("id", fmt.Sprintf("{id:%s}", lobbyId)).
 		HandlerFunc(newGame.handleGameClient)
+	r.HandleFunc("/isJoinable", newGame.handleIsJoinable)
 
 	log.Printf("starting server at http://localhost%s/game?id=%s", addr, lobbyId)
 	err := http.ListenAndServe(addr, r)
 	if err != nil {
 		log.Fatal(err)
 	}
+	ActiveLobbies = append(ActiveLobbies, addr)
 }
 
 //grab maze from other server
