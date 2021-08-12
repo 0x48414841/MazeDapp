@@ -1,4 +1,4 @@
-import { wsConnect, wsConnecting, wsConnected, wsDisconnect, wsDisconnected, setMaze, updatePosFromServer } from '../actions'
+import { wsConnect, wsConnecting, wsConnected, wsDisconnect, wsDisconnected, setMaze, updatePosFromServer, setUsername } from '../actions'
 
 const socketMiddleware = () => {
     let socket = null;
@@ -18,9 +18,12 @@ const socketMiddleware = () => {
         //Receiving messages
         switch (payload.Action) {
             case 'RECV_MAZE':
+                console.log('setting maze')
                 store.dispatch(setMaze(payload.Maze));
+                store.dispatch(setUsername(payload.Username));
                 break;
             case 'RECV_POS':
+                console.log(payload)
                 store.dispatch(updatePosFromServer(payload.AllPos));
                 break;
             default:

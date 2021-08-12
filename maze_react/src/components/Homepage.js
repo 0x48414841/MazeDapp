@@ -5,24 +5,26 @@ import axios from 'axios';
 
 const Homepage = () => {
     const history = useHistory();
-    const onCreateGameClick = () => {
-        const getGameURL = async () => {
-            return await axios.get('http://localhost:8000/createGame')
-                .then(({data}) => {
-                    const {Id, Addr} = data;
-                    console.log(Id, Addr)
-                    history.push({
-                        pathname: '/game',
-                        state: { Id, Addr }
-                    });
+
+    const getGameURL = async (endpoint) => {
+        return await axios.get(`http://localhost:8000/${endpoint}`)
+            .then(({ data }) => {
+                const { Id, Addr } = data;
+                console.log(Id, Addr)
+                history.push({
+                    pathname: '/game',
+                    state: { Id, Addr }
                 });
-
-            //return await maze.get('http://localhost:8000/createGame').data;
-        }
-
-
-        getGameURL()
+            });
     }
+    const onCreateGameClick = () => {
+        getGameURL("createGame")
+    }
+
+
+    const onJoinGameClick = async () => {
+        getGameURL("joinGame")
+    };
 
     return (
         <div className="ui centered grid">
@@ -38,7 +40,7 @@ const Homepage = () => {
                 </div>
                 <br />
                 <div>
-                    <button className="ui button">
+                    <button className="ui button" onClick={onJoinGameClick}>
                         Join Lobby
                     </button>
                 </div>

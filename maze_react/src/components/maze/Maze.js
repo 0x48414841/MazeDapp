@@ -1,20 +1,41 @@
 import React, { useState, useEffect } from 'react';
-import { connect } from 'react-redux';
-import { fetchMaze } from '../../actions';
+import { connect, useSelector } from 'react-redux';
+import { fetchMaze, updatePosFromClient } from '../../actions';
 import { useHistory } from 'react-router';
 import { wsConnect } from '../../actions';
 import Cell from './Cell';
 import './Maze.css';
 
-const Maze = ({ maze, wsConnect }) => {
+const Maze = ({ wsConnect, updatePosFromClient }) => {
     const history = useHistory();
-
+    const maze = useSelector(store => store.maze)
+    const playersLoc = useSelector(store => store.playersLoc)
+    const username = useSelector(store => store.username)
     useEffect(() => {
         const { Id, Addr } = history.location.state;
-        //wsConnect("ws://localhost:8909/");
-
         wsConnect(`ws://localhost${Addr}/game?id=${Id}`);
+
     }, [])
+
+    const getPlayerLoc = () => {
+        const host = playersLoc.find(player => player.Username === username);
+        return maze[host.Pos.X][host.Pos.Y];
+    };
+    useEffect(() => {
+        const onKeyPress = (event) => {
+
+            if (event.key === 'w' || event.key === 'a' || event.key === 's' || event.key === 'd') {
+                updatePosFromClient(getPlayerLoc(), event);
+            }
+        };
+
+        document.body.addEventListener("keydown", onKeyPress, { capture: true });
+        return () => {
+            document.body.removeEventListener("keydown", onKeyPress, {
+                capture: true,
+            });
+        };
+    }, [maze, playersLoc]);
 
     const renderMaze = () => {
         return maze.map(row => {
@@ -43,7 +64,7 @@ const Maze = ({ maze, wsConnect }) => {
             <div className="ten wide column">
                 <div className="ui container center aligned">
                     <div> {renderMaze()}</div>
-                    <br/>
+                    <br />
                     <div>
                         <h2>MAKE SEPARATE COMP  Wager</h2>
 
@@ -74,9 +95,9 @@ const Maze = ({ maze, wsConnect }) => {
 };
 
 const mapStateToProps = (state) => {
-    return { maze: state.maze };
+    return { maze: state.maze, playersLoc: state.playersLoc };
 }
 
 export default connect(mapStateToProps, {
-    wsConnect, //fetchMaze action creator
+    wsConnect, updatePosFromClient //fetchMaze action creator
 })(Maze);

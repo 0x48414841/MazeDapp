@@ -17,6 +17,7 @@ export const wsConnected = host => ({ type: 'WS_CONNECTED',       payload: host 
 export const wsDisconnect = host => ({ type: 'WS_DISCONNECT',     payload: host });
 export const wsDisconnected = host => ({ type: 'WS_DISCONNECTED', payload: host });
 
+export const setUsername = username => ({ type: 'SET_USERNAME', payload: username });
 
 export const updatePosFromClient = (currentCell, event) => {
     if (event.key === 'w' && currentCell.IsNLinked === true) {

@@ -25,29 +25,31 @@ class Cell extends React.Component {
     buildCell = () => {
 
         const output = "cell" +
-            (this.props.data.IsNLinked === true ? " notop"    : ' top') +
+            (this.props.data.IsNLinked === true ? " notop" : ' top') +
             (this.props.data.IsSLinked === true ? " nobottom" : ' bottom') +
-            (this.props.data.IsWLinked === true ? " noleft"   : ' left') +
-            (this.props.data.IsELinked === true ? " noright"  : ' right');
+            (this.props.data.IsWLinked === true ? " noleft" : ' left') +
+            (this.props.data.IsELinked === true ? " noright" : ' right');
         return output;
     };
 
     renderPlayers() {
-       // console.log('render players', this.props);
+        // console.log('render players', this.props);
         return (
-            this.props.playersLoc.map(({X, Y}) => {
-                const {Row, Col} = this.props.data;
+            this.props.playersLoc.map(({Pos}) => {
+                if (!Pos) return;
+                const { Row, Col } = this.props.data;
+                const { X, Y } = Pos;
                 return (
                     <div>
-                        {X == Row && Y == Col ? <Square currentCell={this.props.data} /> : null }
+                        {X == Row && Y == Col ? <Square currentCell={this.props.data} /> : null}
                     </div>
                 );
             })
         );
     }
-    
+
     /// {this.renderPlayers()}
-//{this.props.shouldDisplaySquare === true ? <Square currentCell={this.props.data} /> : null}
+    //{this.props.shouldDisplaySquare === true ? <Square currentCell={this.props.data} /> : null}
     render() {
         return (
 
@@ -62,7 +64,7 @@ class Cell extends React.Component {
 
 const mapStateToProps = (state, ownProps) => {
     //const shouldDisplaySquare = state.playersLoc.X === ownProps.data.Row &&
-      //  state.playersLoc.Y === ownProps.data.Col;
+    //  state.playersLoc.Y === ownProps.data.Col;
     return { playersLoc: state.playersLoc };
 };
 

@@ -6,19 +6,7 @@ import './Square.css';
 const Square = ({currentCell, updatePosFromClient}) => {
 
     useEffect(() => {
-        const onKeyPress = (event) => {
-
-            if (event.key === 'w' || event.key === 'a' || event.key === 's' || event.key === 'd') {
-                updatePosFromClient(currentCell, event);
-            }
-        };
-
-        document.body.addEventListener("keydown", onKeyPress, { capture: true });
-        return () => {
-            document.body.removeEventListener("keydown", onKeyPress, {
-                capture: true,
-            });
-        };
+        
     }, []);
 
     return <div className="square"></div>;
