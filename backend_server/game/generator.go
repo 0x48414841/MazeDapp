@@ -26,3 +26,7 @@ func randomPort() string {
 	//rand.Seed(time.Now().UTC().UnixNano())
 	return strconv.Itoa(9000 + rand.Intn(1000)) //[9000, 9999]
 }
+
+func generateUsername() string {
+	return strconv.Itoa(rand.Intn(10000)) //[0, 9999]
+}

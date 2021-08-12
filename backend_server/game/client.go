@@ -17,8 +17,10 @@ const (
 
 type Msg struct {
 	Action string
-	AllPos []Position
+	AllPos []Player
 	Maze   [][]MazeData
+	//ideally, the user would have a cookie in the request that I can use to query the database for their real username
+	Username string
 }
 
 type Position struct { //add more data here
@@ -35,6 +37,7 @@ func (G *Game) isJoinable() bool {
 func (G *Game) handleIsJoinable(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.WriteHeader(http.StatusOK)
+	log.Println("server recv isJoinable req, answer is", G.isJoinable())
 	if data, err := json.Marshal(IsJoinable{Answer: G.isJoinable(), Id: G.Id, Port: G.Port}); err == nil {
 		w.Write(data)
 	} else {
@@ -57,7 +60,6 @@ func (G *Game) handleGameClient(w http.ResponseWriter, r *http.Request) {
 	defer c.Close()
 
 	//send maze to player
-	G.sendMaze(c)
 	G.initPlayer(c) //create and broadcast new player to all users
 
 	for {
@@ -77,7 +79,8 @@ func (G *Game) handleGameClient(w http.ResponseWriter, r *http.Request) {
 
 func (G *Game) initPlayer(c *websocket.Conn) {
 	G.mutex.Lock()
-	G.PlayersPosition[c] = Position{X: 0, Y: 0}
+	G.PlayersPosition[c] = &Player{Username: generateUsername(), Pos: Position{X: 0, Y: 0}}
+	G.sendMazeAndUsername(c)
 	G.mutex.Unlock()
 
 	G.broadcastMsg()
@@ -90,7 +93,7 @@ func (G *Game) disconnectPlayer(c *websocket.Conn) {
 
 	G.mutex.Lock()
 	//invalid coordinates prevents player from rendering in React app
-	G.PlayersPosition[c] = Position{X: -1, Y: -1}
+	G.PlayersPosition[c].Pos = Position{X: -1, Y: -1}
 	G.mutex.Unlock()
 
 	G.broadcastMsg()
@@ -104,9 +107,9 @@ func (G *Game) broadcastMsg() {
 	G.mutex.Lock()
 	defer G.mutex.Unlock()
 
-	data := Msg{Action: "RECV_POS", AllPos: make([]Position, 0, len(G.PlayersPosition))} //capacity is the len of the map to prevent mem allocations within this crit section
-	for _, pos := range G.PlayersPosition {
-		data.AllPos = append(data.AllPos, pos)
+	data := Msg{Action: "RECV_POS", AllPos: make([]Player, 0, len(G.PlayersPosition))} //capacity is the len of the map to prevent mem allocations within this crit section
+	for _, player := range G.PlayersPosition {
+		data.AllPos = append(data.AllPos, *player)
 	}
 
 	for conn := range G.PlayersPosition {
@@ -114,8 +117,9 @@ func (G *Game) broadcastMsg() {
 	}
 }
 
-func (G *Game) sendMaze(c *websocket.Conn) {
-	m := Msg{Action: "RECV_MAZE", Maze: G.Maze}
+//Change back to sendMaze after database and accounts have been setup
+func (G *Game) sendMazeAndUsername(c *websocket.Conn) {
+	m := Msg{Action: "RECV_MAZE", Maze: G.Maze, Username: G.PlayersPosition[c].Username}
 	if err := c.WriteJSON(m); err != nil {
 		log.Println(err)
 	}

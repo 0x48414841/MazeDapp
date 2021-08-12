@@ -8,7 +8,7 @@ func (G *Game) applyMove(player *websocket.Conn, action string) bool {
 	G.mutex.Lock()
 	defer G.mutex.Unlock()
 
-	currentPos := G.PlayersPosition[player]
+	currentPos := G.PlayersPosition[player].Pos
 
 	//applyAction
 	newPosition := currentPos
@@ -31,7 +31,7 @@ func (G *Game) applyMove(player *websocket.Conn, action string) bool {
 		return false //newPos == oldPos --> no change
 	} else {
 		//commit change
-		G.PlayersPosition[player] = newPosition
+		G.PlayersPosition[player].Pos = newPosition
 		return true
 	}
 }

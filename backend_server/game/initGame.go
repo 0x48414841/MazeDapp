@@ -18,10 +18,15 @@ const MAZE_ADDR = "http://localhost:8080/maze"
 type Game struct {
 	Id, Port        string
 	Maze            [][]MazeData
-	PlayersPosition map[*websocket.Conn]Position
+	PlayersPosition map[*websocket.Conn]*Player
 	StartedAt       time.Time
 	HasGameStarted  bool
 	mutex           *sync.Mutex
+}
+
+type Player struct {
+	Username string
+	Pos      Position
 }
 
 //TODO use protobuf or grpc instead of POD with JSON encoding
@@ -54,7 +59,7 @@ func createGame(addr, lobbyId string) {
 		Port:            addr,
 		StartedAt:       time.Now(),
 		Maze:            getMaze(),
-		PlayersPosition: make(map[*websocket.Conn]Position),
+		PlayersPosition: make(map[*websocket.Conn]*Player),
 		HasGameStarted:  false,
 		mutex:           &sync.Mutex{},
 	}
@@ -68,12 +73,13 @@ func createGame(addr, lobbyId string) {
 		HandlerFunc(newGame.handleGameClient)
 	r.HandleFunc("/isJoinable", newGame.handleIsJoinable)
 
+	ActiveLobbies = append(ActiveLobbies, addr)
+
 	log.Printf("starting server at http://localhost%s/game?id=%s", addr, lobbyId)
 	err := http.ListenAndServe(addr, r)
 	if err != nil {
 		log.Fatal(err)
 	}
-	ActiveLobbies = append(ActiveLobbies, addr)
 }
 
 //grab maze from other server

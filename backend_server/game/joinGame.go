@@ -20,8 +20,9 @@ type IsJoinable struct { //this might be superfluous
 //Well, eventually I want to make all of the new servers a separate PROCESS to mimic headless servers
 //and making the extra requests now will mean less refactoring later. Cheerio
 func JoinGame() (string, string) {
+	log.Println(ActiveLobbies)
 	for _, server := range ActiveLobbies {
-
+		log.Println("sending request to ", fmt.Sprintf("http://localhost%s/isJoinable", server))
 		resp, err := http.Get(fmt.Sprintf("http://localhost%s/isJoinable", server))
 		if err != nil {
 			log.Println(err)
@@ -38,7 +39,7 @@ func JoinGame() (string, string) {
 			return answer.Id, answer.Port
 		}
 	}
-	//this should never execute
+	//add more logic here
 	log.Println("NO LOBBY FOUND")
 	return "", ""
 }
