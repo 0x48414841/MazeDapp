@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { connect, useSelector } from 'react-redux';
-import { fetchMaze, updatePosFromClient } from '../../actions';
+import { updatePosFromClient } from '../../actions';
 import { useHistory } from 'react-router';
 import { wsConnect } from '../../actions';
 import Cell from './Cell';
@@ -8,9 +8,10 @@ import './Maze.css';
 
 const Maze = ({ wsConnect, updatePosFromClient }) => {
     const history = useHistory();
-    const maze = useSelector(store => store.maze)
-    const playersLoc = useSelector(store => store.playersLoc)
-    const username = useSelector(store => store.username)
+    const maze = useSelector(store => store.maze);
+    const playersLoc = useSelector(store => store.playersLoc);
+    const username = useSelector(store => store.username);
+
     useEffect(() => {
         const { Id, Addr } = history.location.state;
         wsConnect(`ws://localhost${Addr}/game?id=${Id}`);
@@ -19,7 +20,8 @@ const Maze = ({ wsConnect, updatePosFromClient }) => {
 
     const getPlayerLoc = () => {
         const host = playersLoc.find(player => player.Username === username);
-        return maze[host.Pos.X][host.Pos.Y];
+        const {X, Y} = host.Pos;
+        return maze[X][Y];
     };
     useEffect(() => {
         const onKeyPress = (event) => {
@@ -30,6 +32,8 @@ const Maze = ({ wsConnect, updatePosFromClient }) => {
         };
 
         document.body.addEventListener("keydown", onKeyPress, { capture: true });
+
+        //enables graceful teardown
         return () => {
             document.body.removeEventListener("keydown", onKeyPress, {
                 capture: true,
@@ -38,14 +42,13 @@ const Maze = ({ wsConnect, updatePosFromClient }) => {
     }, [maze, playersLoc]);
 
     const renderMaze = () => {
-        return maze.map(row => {
+        return maze.map(row => { //TODO add key for row
             return (
                 <div className="row">
                     {
                         row.map(cell => {
                             return (
-                                //<div class="cell left top right bottom"></div>
-                                <React.Fragment> <Cell data={cell} /> </React.Fragment>
+                                <React.Fragment key={`${cell.Row},${cell.Col}`}> <Cell data={cell} /> </React.Fragment>
                             );
                         })
                     }
@@ -99,5 +102,5 @@ const mapStateToProps = (state) => {
 }
 
 export default connect(mapStateToProps, {
-    wsConnect, updatePosFromClient //fetchMaze action creator
+    wsConnect, updatePosFromClient 
 })(Maze);

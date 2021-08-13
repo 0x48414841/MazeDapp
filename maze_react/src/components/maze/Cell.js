@@ -21,6 +21,7 @@ import './Cell.css';
         </div>
     );
 }; */
+
 class Cell extends React.Component {
     buildCell = () => {
 
@@ -33,10 +34,9 @@ class Cell extends React.Component {
     };
 
     renderPlayers() {
-        // console.log('render players', this.props);
         return (
             this.props.playersLoc.map(({Pos}) => {
-                if (!Pos) return;
+                if (!Pos) return null;
                 const { Row, Col } = this.props.data;
                 const { X, Y } = Pos;
                 return (
@@ -48,11 +48,8 @@ class Cell extends React.Component {
         );
     }
 
-    /// {this.renderPlayers()}
-    //{this.props.shouldDisplaySquare === true ? <Square currentCell={this.props.data} /> : null}
     render() {
         return (
-
             <div className={this.buildCell()}>
                 {this.renderPlayers()}
             </div>
@@ -62,9 +59,7 @@ class Cell extends React.Component {
 }
 
 
-const mapStateToProps = (state, ownProps) => {
-    //const shouldDisplaySquare = state.playersLoc.X === ownProps.data.Row &&
-    //  state.playersLoc.Y === ownProps.data.Col;
+const mapStateToProps = (state) => {
     return { playersLoc: state.playersLoc };
 };
 

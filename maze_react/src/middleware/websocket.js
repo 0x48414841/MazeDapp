@@ -23,7 +23,6 @@ const socketMiddleware = () => {
                 store.dispatch(setUsername(payload.Username));
                 break;
             case 'RECV_POS':
-                console.log(payload)
                 store.dispatch(updatePosFromServer(payload.AllPos));
                 break;
             default:
@@ -48,8 +47,8 @@ const socketMiddleware = () => {
                 socket.onmessage = onMessage(store);
                 socket.onclose = onClose(store);
                 socket.onopen = onOpen(store);
-
                 break;
+
             case 'DEC_X':
                 socket.send(JSON.stringify({ Action: "UP" }));
                 break;
@@ -62,6 +61,7 @@ const socketMiddleware = () => {
             case 'INC_Y':
                 socket.send(JSON.stringify({ Action: "RIGHT" }));
                 break;
+
             case 'WS_DISCONNECT':
                 if (socket !== null) {
                     socket.close();
@@ -69,10 +69,7 @@ const socketMiddleware = () => {
                 socket = null;
                 console.log('websocket closed');
                 break;
-            case 'NEW_MESSAGE':
-                console.log('sending a message', action.msg);
-                socket.send(JSON.stringify({ command: 'NEW_MESSAGE', message: action.msg }));
-                break;
+                
             default:
                 return next(action);
         }

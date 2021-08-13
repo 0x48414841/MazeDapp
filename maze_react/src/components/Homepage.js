@@ -1,6 +1,5 @@
 import React from 'react';
 import { useHistory } from 'react-router';
-import maze from "../apis/maze";
 import axios from 'axios';
 
 const Homepage = () => {
@@ -17,10 +16,10 @@ const Homepage = () => {
                 });
             });
     }
+
     const onCreateGameClick = () => {
         getGameURL("createGame")
     }
-
 
     const onJoinGameClick = async () => {
         getGameURL("joinGame")
