@@ -1,3 +1,6 @@
 main.exe
 maze_react/node_modules
 .vscode
+vendor/
+go.mod
+go.sum
