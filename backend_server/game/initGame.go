@@ -1,6 +1,7 @@
 package game
 
 import (
+	"backend/lobbies"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -22,6 +23,8 @@ type Game struct {
 	StartedAt       time.Time
 	HasGameStarted  bool
 	mutex           *sync.Mutex
+	eventChan       chan bool
+	verifiedWages   int
 }
 
 type Player struct {
@@ -62,6 +65,8 @@ func createGame(addr, lobbyId string) {
 		PlayersPosition: make(map[*websocket.Conn]*Player),
 		HasGameStarted:  false,
 		mutex:           &sync.Mutex{},
+		eventChan:       make(chan bool),
+		verifiedWages:   0,
 	}
 	if len(newGame.Maze) == 0 {
 		return
@@ -73,7 +78,12 @@ func createGame(addr, lobbyId string) {
 		HandlerFunc(newGame.handleGameClient)
 	r.HandleFunc("/isJoinable", newGame.handleIsJoinable)
 
-	ActiveLobbies = append(ActiveLobbies, addr)
+	//REPLACE WITH lobbies PACKAGE
+	//ActiveLobbies = append(ActiveLobbies,
+	//	Lobby{LobbyId: lobbyId, Port: addr, EventListener: make(chan bool)},
+	//)
+	eventListenerChan := make(chan bool)
+	lobbies.AddLobby(lobbyId, &lobbies.Lobby{Port: addr, EventListener: eventListenerChan})
 
 	log.Printf("starting server at http://localhost%s/game?id=%s", addr, lobbyId)
 	err := http.ListenAndServe(addr, r)

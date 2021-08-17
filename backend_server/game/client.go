@@ -1,18 +1,12 @@
 package game
 
 import (
+	"backend/lobbies"
 	"encoding/json"
 	"log"
 	"net/http"
 
 	"github.com/gorilla/websocket"
-)
-
-const (
-	UP    = iota //0
-	RIGHT        //1
-	DOWN         //2
-	LEFT         //3
 )
 
 type Msg struct {
@@ -23,7 +17,7 @@ type Msg struct {
 	Username string
 }
 
-type Position struct { //add more data here
+type Position struct { //add more data here like color,
 	X, Y int
 }
 
@@ -38,7 +32,7 @@ func (G *Game) handleIsJoinable(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.WriteHeader(http.StatusOK)
 	log.Println("server recv isJoinable req, answer is", G.isJoinable())
-	if data, err := json.Marshal(IsJoinable{Answer: G.isJoinable(), Id: G.Id, Port: G.Port}); err == nil {
+	if data, err := json.Marshal(lobbies.IsJoinable{Answer: G.isJoinable(), Id: G.Id, Port: G.Port}); err == nil {
 		w.Write(data)
 	} else {
 		log.Fatal(err)
@@ -58,6 +52,9 @@ func (G *Game) handleGameClient(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer c.Close()
+
+	//function returns when two players have placed a bet
+	G.waitUntilPlayersHaveWagered()
 
 	//send maze to player
 	G.initPlayer(c) //create and broadcast new player to all users
@@ -122,5 +119,29 @@ func (G *Game) sendMazeAndUsername(c *websocket.Conn) {
 	m := Msg{Action: "RECV_MAZE", Maze: G.Maze, Username: G.PlayersPosition[c].Username}
 	if err := c.WriteJSON(m); err != nil {
 		log.Println(err)
+	}
+}
+
+func (G *Game) getVerifiedWages() int {
+	G.mutex.Lock()
+	defer G.mutex.Unlock()
+	return G.verifiedWages
+}
+
+func (G *Game) incVerifiedWages() {
+	G.mutex.Lock()
+	defer G.mutex.Unlock()
+	G.verifiedWages++
+}
+
+func (G *Game) waitUntilPlayersHaveWagered() {
+	for G.getVerifiedWages() < 2 {
+		for {
+			if res := <-G.eventChan; res == true {
+				G.incVerifiedWages()
+			} else { //closing the chan will result in res == false
+				return
+			}
+		}
 	}
 }

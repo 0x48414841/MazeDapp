@@ -2,6 +2,7 @@ package main
 
 import (
 	"backend/game"
+	"backend/lobbies"
 	"encoding/json"
 	"net/http"
 
@@ -24,7 +25,8 @@ func CreateGameHandler(w http.ResponseWriter, r *http.Request) {
 func JoinGameHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.WriteHeader(http.StatusOK) //maybe add e
-	lobbyId, gameAddr := game.JoinGame()
+	//lobbyId, gameAddr := game.JoinGame()
+	lobbyId, gameAddr := lobbies.FindJoinableLobby()
 	if data, err := json.Marshal(GameAddr{Id: lobbyId, Addr: gameAddr}); err == nil {
 		w.Write(data)
 	}
